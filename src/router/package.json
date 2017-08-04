@@ -1,5 +1,5 @@
 {
-  "name": "gcframe-cors",
+  "name": "gcframe-router",
   "version": "0.0.1",
   "description": "Add CORS headers to Google Cloud Function HTTP endpoints",
   "repository": {
