@@ -1,0 +1,19 @@
+{
+  "name": "gcframe-cors",
+  "version": "0.0.1",
+  "description": "Add CORS headers to Google Cloud Function HTTP endpoints",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahume/gcframe.git"
+  },
+  "author": "Andy Hume",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ahume/gcframe/issues"
+  },
+  "homepage": "https://github.com/ahume/gcframe",
+  "dependencies": {
+    "curry": "^1.2.0",
+    "path-match": "^1.2.4"
+  }
+}

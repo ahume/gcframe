@@ -1,0 +1,18 @@
+{
+  "name": "gcframe-router",
+  "version": "0.0.1",
+  "description": "Routing for Google Cloud Function HTTP triggers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahume/gcframe.git"
+  },
+  "author": "Andy Hume",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ahume/gcframe/issues"
+  },
+  "homepage": "https://github.com/ahume/gcframe",
+  "dependencies": {
+    "curry": "^1.2.0"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "gcf-routing",
+  "description": "Method and path/param matching for Google Cloud Functions",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "eslint . && mocha test/",
+    "lint": "eslint .",
+    "unit-test": "mocha test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahume/gcf-routing.git"
+  },
+  "author": "Andy Hume",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ahume/gcf-routing/issues"
+  },
+  "homepage": "https://github.com/ahume/gcf-routing#readme",
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.1.3",
+    "eslint-plugin-import": "^2.2.0",
+    "mocha": "^3.2.0",
+    "sinon": "^2.1.0"
+  }
+}
