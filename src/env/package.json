@@ -1,7 +1,7 @@
 {
-  "name": "gcframe-cors",
-  "version": "0.0.2",
-  "description": "Routing for Google Cloud Function HTTP triggers",
+  "name": "gcframe-env",
+  "version": "0.0.1",
+  "description": "Support for environment variables in Google Cloud Functions",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ahume/gcframe.git"
@@ -13,6 +13,8 @@
   },
   "homepage": "https://github.com/ahume/gcframe",
   "dependencies": {
-    "curry": "^1.2.0"
+    "curry": "^1.2.0",
+    "googleapis": "^20.1.0",
+    "properties-parser": "^0.3.1"
   }
 }

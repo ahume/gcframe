@@ -25,12 +25,26 @@ describe('gcframe-cors', () => {
     next = sinon.spy();
   });
 
+  describe('there is no origin header', () => {
+    it('does not add any CORS headers', () => {
+      req.method = 'GET';
+      req.headers = {};
+      cors({ allowOrigin: '*' }, next)(req, res);
+
+      assert(res.set.notCalled);
+      assert(next.calledOnce);
+      assert(next.calledWith(req, res));
+    });
+  });
+
   describe('wildcard origin', () => {
     it('adds CORS headers to GET request', () => {
       req.method = 'GET';
-      cors({ allowOrigin: '*' }, next)(req, res);
+      cors({ allowOrigin: '*', allowMethods: ['GET', 'PUT'] }, next)(req, res);
 
       assert(res.set.calledWith('Access-Control-Allow-Origin', 't.com'));
+      assert(next.calledOnce);
+      assert(next.calledWith(req, res));
     });
 
     it('adds CORS headers to OPTIONS request', () => {
@@ -39,6 +53,8 @@ describe('gcframe-cors', () => {
 
       assert(res.set.calledWith('Access-Control-Allow-Methods', 'GET, PUT'));
       assert(res.set.calledWith('Access-Control-Allow-Origin', 't.com'));
+      assert(status.calledWith(204));
+      assert(send.calledOnce);
     });
   });
 
@@ -48,6 +64,8 @@ describe('gcframe-cors', () => {
       cors({ allowOrigin: 'not.com' }, next)(req, res);
 
       assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
+      assert(next.calledOnce);
+      assert(next.calledWith(req, res));
     });
 
     it('adds CORS headers to OPTIONS request', () => {
@@ -56,16 +74,19 @@ describe('gcframe-cors', () => {
 
       assert(res.set.calledWith('Access-Control-Allow-Methods', 'GET, PUT'));
       assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
+      assert(status.calledWith(204));
+      assert(send.calledOnce);
     });
   });
 
   describe('curried function', () => {
     it('can build/call derivatives', () => {
-      req.method = 'OPTIONS';
+      req.method = 'GET';
       cors({ allowOrigin: 'not.com', allowMethods: ['GET', 'PUT'] })(next)(req, res);
 
-      assert(res.set.calledWith('Access-Control-Allow-Methods', 'GET, PUT'));
       assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
+      assert(next.calledOnce);
+      assert(next.calledWith(req, res));
     });
   });
 });
