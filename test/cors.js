@@ -18,6 +18,8 @@ describe('gcframe-cors', () => {
         origin: 't.com',
       },
       path: '/',
+      // Return request headers
+      header: (s) => req.headers[s],
     };
     res = {
       set: sinon.spy(() => ({ status })),
@@ -76,6 +78,28 @@ describe('gcframe-cors', () => {
       assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
       assert(status.calledWith(204));
       assert(send.calledOnce);
+    });
+  });
+
+  describe('request-headers header', () => {
+    it('does not include header if not requested', () => {
+      req.method = 'GET';
+      cors({ allowOrigin: 'not.com', allowHeaders: ['THING'] }, next)(req, res);
+
+      assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
+      assert(!res.set.calledWith('Access-Control-Allow-Headers'));
+      assert(next.calledOnce);
+      assert(next.calledWith(req, res));
+    });
+    it('includes header with allowed headers listed', () => {
+      req.method = 'GET';
+      req.headers['Access-Control-Request-Headers'] = 'Authorization';
+      cors({ allowOrigin: 'not.com', allowHeaders: ['Authorization', 'THING'] }, next)(req, res);
+
+      assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
+      assert(res.set.calledWith('Access-Control-Allow-Headers', 'Authorization'));
+      assert(next.calledOnce);
+      assert(next.calledWith(req, res));
     });
   });
 
