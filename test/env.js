@@ -6,7 +6,7 @@ const proxyquire = require('proxyquire');
 
 const fsStub = {};
 
-const env = proxyquire('../src/env', {
+const { remoteConfig, fileConfig } = proxyquire('../src/env', {
   fs: fsStub,
   googleapis: require('./stubs/googleapis'),
   'properties-parser': require('./stubs/property-parser'),
@@ -26,7 +26,7 @@ describe('gcframe-env', () => {
   describe('local file', () => {
     it('can load in key/value pairs', (done) => {
       fsStub.exists = (file, callback) => callback(true);
-      env('thing', next)(req, res);
+      remoteConfig('thing', next)(req, res);
       setTimeout(() => {
         assert.equal(process.env.KEY1, 'value1');
         assert(next.calledOnce);
@@ -38,12 +38,23 @@ describe('gcframe-env', () => {
   describe('remote config', () => {
     it('can load in key/value pairs', (done) => {
       fsStub.exists = (file, callback) => callback(false);
-      env('thing', next)(req, res);
+      remoteConfig('thing', next)(req, res);
       setTimeout(() => {
         assert.equal(process.env.KEY2, 'value2');
         assert(next.calledOnce);
         done();
       }, 1);
+    });
+  });
+
+  describe('abitrary local file', () => {
+    it('can load in key/value pairs', (done) => {
+      fileConfig('somefile.config', next)(req, res);
+      setTimeout(() => {
+        assert.equal(process.env.KEY1, 'value1');
+        assert(next.calledOnce);
+        done();
+      });
     });
   });
 });

@@ -41,9 +41,9 @@ const auth = () =>
     });
   });
 
-const loadLocalFile = () =>
+const loadLocalFile = (filename) =>
   new Promise((resolve, reject) =>
-    propParser.read(localConfig, (err, config) => {
+    propParser.read(filename, (err, config) => {
       if (err) {
         return reject();
       }
@@ -67,15 +67,23 @@ const loadRuntimeConfig = (configName) =>
       });
     }));
 
-const load = (configName, next) => (req, res) =>
+const remoteConfig = (configName, next) => (...args) =>
   ifLocalConfig()
     .then((exists) => {
       if (exists) {
-        return loadLocalFile();
+        return loadLocalFile(localConfig);
       }
       return loadRuntimeConfig(configName);
     })
     .then(addVarsToEnvironment)
-    .then(() => next(req, res));
+    .then(() => next(...args));
 
-module.exports = curry(load);
+const fileConfig = (filename, next) => (...args) =>
+  loadLocalFile(filename)
+    .then(addVarsToEnvironment)
+    .then(() => next(...args));
+
+module.exports = {
+  remoteConfig: curry(remoteConfig),
+  fileConfig: curry(fileConfig),
+};
