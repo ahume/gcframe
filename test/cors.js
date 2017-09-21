@@ -97,7 +97,7 @@ describe('gcframe-cors', () => {
       cors({ allowOrigin: 'not.com', allowHeaders: ['Authorization', 'THING'] }, next)(req, res);
 
       assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
-      assert(res.set.calledWith('Access-Control-Allow-Headers', 'Authorization'));
+      assert(res.set.calledWith('Access-Control-Allow-Headers', 'authorization'));
       assert(next.calledOnce);
       assert(next.calledWith(req, res));
     });

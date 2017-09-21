@@ -1,6 +1,7 @@
 const curry = require('curry');
 
 const trim = (s) => s.trim();
+const lowercase = (s) => s.toLowerCase();
 
 const cors = ({ allowOrigin, allowMethods = ['GET'], allowHeaders = [] }, next) => (req, res) => {
   if (!req.headers.origin) {
@@ -16,11 +17,11 @@ const cors = ({ allowOrigin, allowMethods = ['GET'], allowHeaders = [] }, next) 
   const requestedHeaders = req.header('Access-Control-Request-Headers');
 
   if (requestedHeaders) {
-    const allowed = requestedHeaders.split(',').map(trim).filter((header) =>
-      allowHeaders.includes(header));
+    const allowed = requestedHeaders.split(',').map(trim).map(lowercase).filter((header) =>
+      allowHeaders.map(trim).map(lowercase).includes(header));
 
     if (allowed.length > 0) {
-      res.set('Access-Control-Allow-Headers', allowed.join(', '));
+      res.set('Access-Control-Allow-Headers', allowed.map(lowercase).join(', '));
     }
   }
   if (req.method === 'OPTIONS') {
