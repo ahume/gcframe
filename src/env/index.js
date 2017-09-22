@@ -83,7 +83,15 @@ const fileConfig = (filename, next) => (...args) =>
     .then(addVarsToEnvironment)
     .then(() => next(...args));
 
+const fileConfigSync = (filename) => {
+  const variables = propParser.read(filename);
+  Object.keys(variables).forEach((variable) => {
+    process.env[variable] = variables[variable];
+  });
+};
+
 module.exports = {
   remoteConfig: curry(remoteConfig),
   fileConfig: curry(fileConfig),
+  fileConfigSync,
 };

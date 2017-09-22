@@ -1,6 +1,6 @@
 {
   "name": "gcframe-env",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Support for environment variables in Google Cloud Functions",
   "repository": {
     "type": "git",
