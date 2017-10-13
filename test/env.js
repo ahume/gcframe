@@ -13,11 +13,16 @@ const { remoteConfig, fileConfig } = proxyquire('../src/env', {
 });
 
 describe('gcframe-env', () => {
+  let postLoadCallback;
   let next;
   let req;
   let res;
 
   beforeEach(() => {
+    process.env.KEY1 = undefined;
+    process.env.KEY2 = undefined;
+    process.env.GCFRAME_LOAD_COMPLETE = undefined;
+    postLoadCallback = sinon.spy();
     next = sinon.spy();
     req = {};
     res = {};
@@ -26,10 +31,19 @@ describe('gcframe-env', () => {
   describe('local file', () => {
     it('can load in key/value pairs', (done) => {
       fsStub.exists = (file, callback) => callback(true);
-      remoteConfig('thing', next)(req, res);
+      remoteConfig('thing', postLoadCallback, next)(req, res);
       setTimeout(() => {
         assert.equal(process.env.KEY1, 'value1');
         assert(next.calledOnce);
+        done();
+      }, 1);
+    });
+
+    it('calls postLoadCallback function', (done) => {
+      fsStub.exists = (file, callback) => callback(true);
+      remoteConfig('thing', postLoadCallback, next)(req, res);
+      setTimeout(() => {
+        assert(postLoadCallback.calledOnce);
         done();
       }, 1);
     });
@@ -38,10 +52,30 @@ describe('gcframe-env', () => {
   describe('remote config', () => {
     it('can load in key/value pairs', (done) => {
       fsStub.exists = (file, callback) => callback(false);
-      remoteConfig('thing', next)(req, res);
+      remoteConfig('thing', postLoadCallback, next)(req, res);
       setTimeout(() => {
         assert.equal(process.env.KEY2, 'value2');
         assert(next.calledOnce);
+        done();
+      }, 1);
+    });
+
+    it('calls postLoadCallback function', (done) => {
+      fsStub.exists = (file, callback) => callback(false);
+      remoteConfig('thing', postLoadCallback, next)(req, res);
+      setTimeout(() => {
+        assert(postLoadCallback.calledOnce);
+        done();
+      }, 1);
+    });
+
+    it('returns fast if load complete flag is set', (done) => {
+      process.env.GCFRAME_LOAD_COMPLETE = true;
+      fsStub.exists = (file, callback) => callback(false);
+      remoteConfig('thing', postLoadCallback, next)(req, res);
+      setTimeout(() => {
+        assert(next.calledOnce);
+        assert(postLoadCallback.notCalled);
         done();
       }, 1);
     });

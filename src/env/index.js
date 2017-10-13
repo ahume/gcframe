@@ -7,6 +7,12 @@ const curry = require('curry');
 const runtimeConfig = google.runtimeconfig('v1beta1');
 const localConfig = path.join(process.cwd(), '../.config');
 
+const addLoadedFlag = (variables) =>
+  Object.assign(variables, {
+    GCFRAME_LOAD_COMPLETE: 'true',
+  });
+
+
 const addVarsToEnvironment = (variables) =>
   Promise.resolve(Object.keys(variables).forEach((variable) => {
     process.env[variable] = variables[variable];
@@ -67,16 +73,24 @@ const loadRuntimeConfig = (configName) =>
       });
     }));
 
-const remoteConfig = (configName, next) => (...args) =>
-  ifLocalConfig()
+const remoteConfig = (configName, startUp, next) => (...args) => {
+  if (process.env.GCFRAME_LOAD_COMPLETE === 'true') {
+    return Promise.resolve()
+      .then(() => next(...args));
+  }
+
+  return ifLocalConfig()
     .then((exists) => {
       if (exists) {
         return loadLocalFile(localConfig);
       }
       return loadRuntimeConfig(configName);
     })
+    .then(addLoadedFlag)
     .then(addVarsToEnvironment)
+    .then(startUp)
     .then(() => next(...args));
+};
 
 const fileConfig = (filename, next) => (...args) =>
   loadLocalFile(filename)
