@@ -8,8 +8,11 @@ const cors = ({ allowOrigin, allowMethods = ['GET'], allowHeaders = [] }, next) 
     return next(req, res);
   }
 
-  let origin = allowOrigin;
-  if (allowOrigin === '*') {
+  let origin;
+
+  if (allowOrigin instanceof Array && allowOrigin.includes(req.headers.origin)) {
+    origin = req.headers.origin;
+  } else if (allowOrigin === '*') {
     origin = req.headers.origin;
   }
 

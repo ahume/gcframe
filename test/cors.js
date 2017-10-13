@@ -63,7 +63,8 @@ describe('gcframe-cors', () => {
   describe('specific origin', () => {
     it('adds CORS headers to GET request', () => {
       req.method = 'GET';
-      cors({ allowOrigin: 'not.com' }, next)(req, res);
+      req.headers.origin = 'not.com';
+      cors({ allowOrigin: ['not.com'] }, next)(req, res);
 
       assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
       assert(next.calledOnce);
@@ -72,19 +73,31 @@ describe('gcframe-cors', () => {
 
     it('adds CORS headers to OPTIONS request', () => {
       req.method = 'OPTIONS';
-      cors({ allowOrigin: 'not.com', allowMethods: ['GET', 'PUT'] }, next)(req, res);
+      req.headers.origin = 'not.com';
+      cors({ allowOrigin: ['not.com'], allowMethods: ['GET', 'PUT'] }, next)(req, res);
 
       assert(res.set.calledWith('Access-Control-Allow-Methods', 'GET, PUT'));
       assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
       assert(status.calledWith(204));
       assert(send.calledOnce);
     });
+
+    it('does not add CORS headers if origin does not match', () => {
+      req.method = 'GET';
+      cors({ allowOrigin: ['not.com'] }, next)(req, res);
+
+      assert(!res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
+      assert(!res.set.calledWith('Access-Control-Allow-Origin', 't.com'));
+      assert(next.calledOnce);
+      assert(next.calledWith(req, res));
+    });
   });
 
   describe('request-headers header', () => {
     it('does not include header if not requested', () => {
       req.method = 'GET';
-      cors({ allowOrigin: 'not.com', allowHeaders: ['THING'] }, next)(req, res);
+      req.headers.origin = 'not.com';
+      cors({ allowOrigin: ['not.com'], allowHeaders: ['THING'] }, next)(req, res);
 
       assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
       assert(!res.set.calledWith('Access-Control-Allow-Headers'));
@@ -93,8 +106,9 @@ describe('gcframe-cors', () => {
     });
     it('includes header with allowed headers listed', () => {
       req.method = 'GET';
+      req.headers.origin = 'not.com';
       req.headers['Access-Control-Request-Headers'] = 'Authorization';
-      cors({ allowOrigin: 'not.com', allowHeaders: ['Authorization', 'THING'] }, next)(req, res);
+      cors({ allowOrigin: ['not.com'], allowHeaders: ['Authorization', 'THING'] }, next)(req, res);
 
       assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
       assert(res.set.calledWith('Access-Control-Allow-Headers', 'authorization'));
@@ -106,7 +120,8 @@ describe('gcframe-cors', () => {
   describe('curried function', () => {
     it('can build/call derivatives', () => {
       req.method = 'GET';
-      cors({ allowOrigin: 'not.com', allowMethods: ['GET', 'PUT'] })(next)(req, res);
+      req.headers.origin = 'not.com';
+      cors({ allowOrigin: ['not.com'], allowMethods: ['GET', 'PUT'] })(next)(req, res);
 
       assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
       assert(next.calledOnce);
