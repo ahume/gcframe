@@ -86,8 +86,7 @@ describe('gcframe-cors', () => {
       req.method = 'GET';
       cors({ allowOrigin: ['not.com'] }, next)(req, res);
 
-      assert(!res.set.calledWith('Access-Control-Allow-Origin', 'not.com'));
-      assert(!res.set.calledWith('Access-Control-Allow-Origin', 't.com'));
+      assert(res.set.notCalled);
       assert(next.calledOnce);
       assert(next.calledWith(req, res));
     });
