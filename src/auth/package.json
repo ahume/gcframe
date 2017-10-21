@@ -1,0 +1,19 @@
+{
+  "name": "gcframe-auth",
+  "version": "0.0.1",
+  "description": "Authentication in Google Cloud Function HTTP triggers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahume/gcframe.git"
+  },
+  "author": "Andy Hume",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ahume/gcframe/issues"
+  },
+  "homepage": "https://github.com/ahume/gcframe",
+  "dependencies": {
+    "curry": "1.2.0",
+    "googleapis": "22.2.0"
+  }
+}

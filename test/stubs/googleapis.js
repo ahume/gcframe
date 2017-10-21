@@ -14,6 +14,15 @@ module.exports = {
       },
     },
   }),
+  storage: () => ({
+    buckets: {
+      testIamPermissions: (config, something, callback) => {
+        callback(null, {
+          permissions: ['storage.buckets.get'],
+        });
+      },
+    },
+  }),
   auth: {
     getApplicationDefault: (callback) => {
       const authClient = {
@@ -21,6 +30,10 @@ module.exports = {
         createScoped: () => 'authClient. Can be anything. Why not a string?',
       };
       callback(null, authClient, 'projectId');
+    },
+    /* eslint object-shorthand: 0 */
+    OAuth2: function OAuth2() {
+      this.setCredentials = () => {};
     },
   },
 };
