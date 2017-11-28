@@ -1,8 +1,8 @@
 # GCFrame
 
-Help serve HTTP endpoints with Google Cloud Functions.
+GCFrame helps serve HTTP endpoints with Google Cloud Functions.
 
-There's a bunch of common things you probably want to do when serving HTTP endpoints via Google Cloud Functions. These micro libraries help out with that.
+There's a bunch of common things you probably want to do when serving HTTP endpoints via Google Cloud Functions. These micro libraries help out with that. They are also deprecated once Google implement these natively (via Cloud Endpoints?) which they surely will.
 
 ## Functions
 

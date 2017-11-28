@@ -24,7 +24,7 @@ Attempts to match HTTP requests based on method (GET, PUT, POST, etc) and path.
 | ----------| -------------------------------------------------------------------|----------|
 | `method`  | HTTP method to match (e.g GET, PUT, POST, DELETE).                 | required |
 | `path`    | The path for which the main cloud function is invoked.             | required |
-| `next`    | Another gcframe/middleware function, or the cloud function itself. | required |
+| `next`    | A gcframe/middleware function, or the cloud function itself. If not provided the function returns a "partially applied" function which will except the `next` argument. | required |
 
 ### Examples
 
