@@ -27,6 +27,18 @@ Allows/denies HTTP access to a function based on CORS request headers received.
 | `options.allowHeaders` | An Array object containing a list of allowed headers.                                                    | []      |
 | `next`                 | A gcframe/middleware function, or the cloud function itself. If not provided the function returns a "partially applied" function which will except the `next` argument. | required |
 
+The cors function will add appropriate CORS headers to a response to allow or deny the browser from accessing the response.
+
+`Access-Control-Allow-Origin` will be set with the value of the `Origin` header of the request if...
+   * it is included in `options.allowOrigin` list, or
+   * the special case `*` is used in `options.allowOrigin`. 
+
+`Access-Control-Allow-Headers` will be set with any headers included in `options.allowHeaders` list.
+
+`Access-Control-Allow-Methods` will be set with any methods included in `options.allowMethods` if the request method was `OPTIONS`.
+
+Read more about [CORS on the MDN web docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+
 ### Examples
 
 ```
