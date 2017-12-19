@@ -11,15 +11,20 @@ const getAccessToken = (header) => {
   return null;
 };
 
-const env = ({ authBucket }, next) => (req, res) => {
+const env = ({ authBucket, generateAuthBucket }, next) => (req, res) => {
   const accessToken = getAccessToken(req.get('Authorization'));
   const oauth = new Google.auth.OAuth2();
   oauth.setCredentials({ access_token: accessToken });
 
+  let bucket = authBucket;
+  if (typeof generateAuthBucket === 'function') {
+    bucket = generateAuthBucket(req);
+  }
+
   const permission = 'storage.buckets.get';
   const gcs = Google.storage('v1');
   gcs.buckets.testIamPermissions({
-    bucket: authBucket,
+    bucket,
     permissions: [permission],
     auth: oauth,
   }, {}, (err, response) => {

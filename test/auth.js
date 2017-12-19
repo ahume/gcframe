@@ -38,6 +38,16 @@ describe('gcframe-auth', () => {
     }, 1);
   });
 
+  it('can generate bucketname dynamically', (done) => {
+    const generateName = () => 'another-bucket';
+    auth({ generateAuthBucket: generateName }, next)(req, res);
+    setTimeout(() => {
+      assert(next.calledOnce);
+      assert(res.status.notCalled);
+      done();
+    }, 1);
+  });
+
   it('returns 403 if auth fails', (done) => {
     googleapis.storage = () => ({
       buckets: {
