@@ -19,6 +19,13 @@ const env = ({ authBucket, generateAuthBucket }, next) => (req, res) => {
   let bucket = authBucket;
   if (typeof generateAuthBucket === 'function') {
     bucket = generateAuthBucket(req);
+    if (typeof bucket !== 'string') {
+      res.status(403).json({
+        code: 403,
+        message: 'The request is forbidden. Could not generate auth bucket name.',
+      });
+      return;
+    }
   }
 
   const permission = 'storage.buckets.get';
@@ -33,7 +40,7 @@ const env = ({ authBucket, generateAuthBucket }, next) => (req, res) => {
     } else {
       res.status(403).json({
         code: 403,
-        message: 'The request is forbidden',
+        message: `The request is forbidden. ${bucket} did not allow access`,
       });
     }
   });

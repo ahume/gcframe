@@ -1,6 +1,6 @@
 {
   "name": "gcframe-auth",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Authentication in Google Cloud Function HTTP triggers",
   "repository": {
     "type": "git",
