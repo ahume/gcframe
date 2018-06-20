@@ -1,15 +1,18 @@
 /* eslint global-require: 0 */
 
+// Packages
 const assert = require('assert');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 
 const googleapis = require('./stubs/googleapis');
 
+// Rewired auth package
 const auth = proxyquire('../src/auth', {
   googleapis,
 });
 
+// Consts
 const authBucket = 'a-bucket-name';
 
 describe('gcframe-auth', () => {
@@ -30,22 +33,22 @@ describe('gcframe-auth', () => {
   });
 
   it('calls next if auth succeds', (done) => {
-    auth({ authBucket }, next)(req, res);
-    setTimeout(() => {
-      assert(next.calledOnce);
-      assert(res.status.notCalled);
-      done();
-    }, 1);
+    auth({ authBucket }, next)(req, res)
+      .then(() => {
+        assert(next.calledOnce);
+        assert(res.status.notCalled);
+        done();
+      });
   });
 
   it('can generate bucketname dynamically', (done) => {
     const generateName = () => 'another-bucket';
-    auth({ generateAuthBucket: generateName }, next)(req, res);
-    setTimeout(() => {
+    auth({ generateAuthBucket: generateName }, next)(req, res)
+    .then(() => {
       assert(next.calledOnce);
       assert(res.status.notCalled);
       done();
-    }, 1);
+    });
   });
 
   it('returns 403 if auth fails', (done) => {
@@ -57,11 +60,11 @@ describe('gcframe-auth', () => {
       },
     });
 
-    auth({ authBucket }, next)(req, res);
-    setTimeout(() => {
+    auth({ authBucket }, next)(req, res)
+    .then(() => {
       assert(next.notCalled);
       assert(res.status.calledWith(403));
       done();
-    }, 1);
+    });
   });
 });

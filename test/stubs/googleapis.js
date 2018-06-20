@@ -36,4 +36,15 @@ module.exports = {
       this.setCredentials = () => {};
     },
   },
+  oauth2: () => ({
+    userinfo: {
+      get: (query, method, callback) => {
+        callback(undefined, {
+          given_name: 'john',
+          family_name: 'smith',
+          email: 'johnsmith@test.com',
+        });
+      },
+    },
+  }),
 };
