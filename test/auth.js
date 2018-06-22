@@ -23,7 +23,7 @@ describe('gcframe-auth', () => {
   beforeEach(() => {
     next = sinon.spy();
     req = {
-      get: () => 'Authorization: Bearer 123token456',
+      get: () => 'Bearer 123token456',
     };
     res = {
       status: sinon.stub().returns({
