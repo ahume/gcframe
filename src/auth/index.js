@@ -42,16 +42,18 @@ const getAccessToken = (header) =>
 // Lets retrieve user info via access token
 const retrieveUserInformation = (accessToken) => {
   const userInfoClient = Google.oauth2('v2').userinfo;
-  return new Promise((resolve, reject) => {
-    userInfoClient.get({ access_token: accessToken }, {}, (err, res) => {
+  return new Promise((resolve) => {
+    userInfoClient.get({ access_token: accessToken }, {}, (err, userInfo) => {
+      // If we weren't able to retrieve user info, log this but let the
+      // function continue through to bucket auth. We just won't know who was
+      // doing it.
       if (err) {
-        reject({
-          message: `${err.errors[0].reason}: ${err.errors[0].message}`,
-          code: err.code,
+        logger.log({
+          level: 'warn',
+          message: `unable to retrieve user info: ${JSON.stringify(err)}`,
         });
-        return;
       }
-      resolve(res);
+      resolve(userInfo);
     });
   }).catch((err) => {
     logger.log({
