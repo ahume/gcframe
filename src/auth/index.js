@@ -22,12 +22,18 @@ class GCFrameAuthError extends Error {
 const getAccessToken = (header) =>
   new Promise((resolve, reject) => {
     if (!header) {
-      reject('No header suppiled');
+      reject({
+        code: 403,
+        message: 'No Authorization header supplied',
+      });
       return;
     }
     const match = header.match(/^Bearer\s+([^\s]+)$/);
     if (!match) {
-      reject('No access-token found');
+      reject({
+        code: 403,
+        message: 'No access-token found in Authorization header',
+      });
       return;
     }
     resolve(match[1]);
