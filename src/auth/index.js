@@ -1,5 +1,5 @@
 // Imports
-const curry = require('curry');
+const R = require('rambda');
 const Google = require('googleapis');
 const winston = require('winston');
 
@@ -19,31 +19,32 @@ class GCFrameAuthError extends Error {
 }
 
 // Lets grab the accessToken
-const getAccessToken = (header) =>
-  new Promise((resolve, reject) => {
-    if (!header) {
-      reject({
-        code: 403,
-        message: 'No Authorization header supplied',
-      });
-      return;
-    }
-    const match = header.match(/^Bearer\s+([^\s]+)$/);
-    if (!match) {
-      reject({
-        code: 403,
-        message: 'No access-token found in Authorization header',
-      });
-      return;
-    }
-    resolve(match[1]);
-  }).catch((err) => {
-    logger.log({
-      level: 'error',
-      message: `error occurred at getAccessToken: ${JSON.stringify(err)}`,
+const getAccessToken = header => new Promise((resolve, reject) => {
+  if (!header) {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    reject({
+      code: 403,
+      message: 'No Authorization header supplied',
     });
-    throw new GCFrameAuthError(err);
+    return;
+  }
+  const match = header.match(/^Bearer\s+([^\s]+)$/);
+  if (!match) {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    reject({
+      code: 403,
+      message: 'No access-token found in Authorization header',
+    });
+    return;
+  }
+  resolve(match[1]);
+}).catch((err) => {
+  logger.log({
+    level: 'error',
+    message: `error occurred at getAccessToken: ${JSON.stringify(err)}`,
   });
+  throw new GCFrameAuthError(err);
+});
 
 // Lets retrieve user info via access token
 const retrieveUserInformation = (accessToken) => {
@@ -78,60 +79,61 @@ const generateGoogleOAuth = (accessToken) => {
 };
 
 // Lets derive which kind of google storage bucket was requested
-const deriveGoogleStorageBucket = (authBucket, authBucketGenerator, req) =>
-  new Promise((resolve, reject) => {
-    let bucket = authBucket;
-    if (typeof authBucketGenerator === 'function') {
-      bucket = authBucketGenerator(req);
-      if (typeof bucket !== 'string') {
-        reject({
-          code: 403,
-          message:
+// eslint-disable-next-line max-len
+const deriveGoogleStorageBucket = (authBucket, authBucketGenerator, req) => new Promise((resolve, reject) => {
+  let bucket = authBucket;
+  if (typeof authBucketGenerator === 'function') {
+    bucket = authBucketGenerator(req);
+    if (typeof bucket !== 'string') {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({
+        code: 403,
+        message:
             'The request is forbidden. Could not generate auth bucket name.',
-        });
-        return;
-      }
+      });
+      return;
     }
-    resolve(bucket);
-  }).catch((err) => {
-    logger.log({
-      level: 'error',
-      message: `error occurred at deriveGoogleStorageBucket: ${JSON.stringify(err)}`,
-    });
-    throw new GCFrameAuthError(err);
+  }
+  resolve(bucket);
+}).catch((err) => {
+  logger.log({
+    level: 'error',
+    message: `error occurred at deriveGoogleStorageBucket: ${JSON.stringify(err)}`,
   });
+  throw new GCFrameAuthError(err);
+});
 
 // Lets check a persons permissions for the storage bucket
-const checkUserPermissionForStorageBucket = (bucket, oauth) =>
-  new Promise((resolve, reject) => {
-    const permission = 'storage.buckets.get';
-    const gcs = Google.storage('v1');
-    const opts = {
-      bucket,
-      permissions: [permission],
-      auth: oauth,
-    };
-    gcs.buckets.testIamPermissions(opts, {}, (err, response) => {
-      if (
-        response &&
-        response.permissions &&
-        response.permissions.includes(permission)
-      ) {
-        resolve();
-      } else {
-        reject({
-          code: 403,
-          message: `The request is forbidden. ${bucket} did not allow access`,
-        });
-      }
-    });
-  }).catch((err) => {
-    logger.log({
-      level: 'error',
-      message: `error occurred at checkUserPermissionForStorageBucket: ${JSON.stringify(err)}`,
-    });
-    throw new GCFrameAuthError(err);
+const checkUserPermissionForStorageBucket = (bucket, oauth) => new Promise((resolve, reject) => {
+  const permission = 'storage.buckets.get';
+  const gcs = Google.storage('v1');
+  const opts = {
+    bucket,
+    permissions: [permission],
+    auth: oauth,
+  };
+  gcs.buckets.testIamPermissions(opts, {}, (err, response) => {
+    if (
+      response
+        && response.permissions
+        && response.permissions.includes(permission)
+    ) {
+      resolve();
+    } else {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({
+        code: 403,
+        message: `The request is forbidden. ${bucket} did not allow access`,
+      });
+    }
   });
+}).catch((err) => {
+  logger.log({
+    level: 'error',
+    message: `error occurred at checkUserPermissionForStorageBucket: ${JSON.stringify(err)}`,
+  });
+  throw new GCFrameAuthError(err);
+});
 
 // Exported middleware for GCF or Express.js
 const env = ({ authBucket, generateAuthBucket }, next) => (req, res) => {
@@ -150,7 +152,7 @@ const env = ({ authBucket, generateAuthBucket }, next) => (req, res) => {
       oauth = generateGoogleOAuth(accessToken);
     })
     .then(() => deriveGoogleStorageBucket(authBucket, generateAuthBucket, decoratedReq))
-    .then((bucket) => checkUserPermissionForStorageBucket(bucket, oauth))
+    .then(bucket => checkUserPermissionForStorageBucket(bucket, oauth))
     .then(() => next(decoratedReq, res))
     .catch((err) => {
       // Here we can handle GCFrameAuthErrors and send the correct response back to a client.
@@ -163,4 +165,4 @@ const env = ({ authBucket, generateAuthBucket }, next) => (req, res) => {
     });
 };
 
-module.exports = curry(env);
+module.exports = R.curry(env);
