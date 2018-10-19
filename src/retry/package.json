@@ -1,6 +1,6 @@
 {
   "name": "gcframe-retry",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Allow for background functions to be retried within a specified time limit.",
   "repository": {
     "type": "git",
