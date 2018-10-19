@@ -3,13 +3,13 @@ const sinon = require('sinon');
 
 const retry = require('../src/retry');
 
-describe.only('gcframe-retry', () => {
+describe('gcframe-retry', () => {
   let event;
   let next;
 
   beforeEach(() => {
     event = {
-      timestamp: new Date(),
+      context: { timestamp: new Date() },
     };
     next = sinon.spy();
   });
@@ -24,7 +24,7 @@ describe.only('gcframe-retry', () => {
   it('exits early if the timestamp is over 60000ms old', (done) => {
     const d = new Date();
     d.setDate(d.getDate() - 1);
-    event.timestamp = d;
+    event.context.timestamp = d;
     retry(60000, next)(event)
       .catch(() => {
         assert(next.notCalled);

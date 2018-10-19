@@ -1,6 +1,6 @@
 const curry = require('curry');
 
-const eventIsTooOld = (maxAge, event) => Date.now() - Date.parse(event.timestamp) > maxAge;
+const eventIsTooOld = (maxAge, event) => Date.now() - Date.parse(event.context.timestamp) > maxAge;
 
 const retry = (maxAge, next) => (event) => {
   if (eventIsTooOld(maxAge, event)) {
