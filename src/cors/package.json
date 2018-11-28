@@ -1,6 +1,6 @@
 {
   "name": "gcframe-cors",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Routing for Google Cloud Function HTTP triggers",
   "repository": {
     "type": "git",
