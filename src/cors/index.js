@@ -8,7 +8,7 @@ const cors = ({ allowOrigin, allowMethods = ['GET'], allowHeaders = [] }, next) 
     return next(req, res);
   }
 
-  const wildcardPort = `${req.headers.origin.split(':')[0]}:*`;
+  const wildcardPort = `${req.headers.origin.split(/:\d/)[0]}:*`;
 
   const setAllowedOriginHeader =
     // Set the header if the origin is in the allowed list
