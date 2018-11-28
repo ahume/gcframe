@@ -8,9 +8,13 @@ const cors = ({ allowOrigin, allowMethods = ['GET'], allowHeaders = [] }, next) 
     return next(req, res);
   }
 
+  const wildcardPort = `${req.headers.origin.split(':')[0]}:*`;
+
   const setAllowedOriginHeader =
     // Set the header if the origin is in the allowed list
-    (allowOrigin instanceof Array && allowOrigin.includes(req.headers.origin)) ||
+    (allowOrigin instanceof Array && (allowOrigin.includes(req.headers.origin) ||
+    // Special case for wildcard ports
+    allowOrigin.includes(wildcardPort))) ||
     // Or if the special case * is passed in.
     allowOrigin === '*';
 

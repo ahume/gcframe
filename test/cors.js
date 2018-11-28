@@ -60,6 +60,29 @@ describe('gcframe-cors', () => {
     });
   });
 
+  describe('wildcard port on specific origin', () => {
+    it('adds CORS headers to GET request', () => {
+      req.method = 'GET';
+      req.headers.origin = 'not.com:987';
+      cors({ allowOrigin: ['not.com:*'] }, next)(req, res);
+
+      assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com:987'));
+      assert(next.calledOnce);
+      assert(next.calledWith(req, res));
+    });
+
+    it('adds CORS headers to OPTIONS request', () => {
+      req.method = 'OPTIONS';
+      req.headers.origin = 'not.com:987';
+      cors({ allowOrigin: ['not.com:*'], allowMethods: ['GET', 'PUT'] }, next)(req, res);
+
+      assert(res.set.calledWith('Access-Control-Allow-Methods', 'GET, PUT'));
+      assert(res.set.calledWith('Access-Control-Allow-Origin', 'not.com:987'));
+      assert(status.calledWith(204));
+      assert(send.calledOnce);
+    });
+  });
+
   describe('specific origin', () => {
     it('adds CORS headers to GET request', () => {
       req.method = 'GET';
