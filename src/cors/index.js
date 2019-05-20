@@ -3,7 +3,7 @@ const curry = require('curry');
 const trim = (s) => s.trim();
 const lowercase = (s) => s.toLowerCase();
 
-const cors = ({ allowOrigin, allowMethods = ['GET'], allowHeaders = [] }, next) => (req, res) => {
+const cors = ({ allowOrigin, allowMethods = ['GET'], allowHeaders = [], exposeHeaders = [] }, next) => (req, res) => {
   if (!req.headers.origin) {
     return next(req, res);
   }
@@ -23,6 +23,10 @@ const cors = ({ allowOrigin, allowMethods = ['GET'], allowHeaders = [] }, next) 
   }
 
   const requestedHeaders = req.header('Access-Control-Request-Headers');
+
+  if (exposeHeaders.length > 0) {
+    res.set('Access-Control-Expose-Headers', exposeHeaders.join(', '));
+  }
 
   if (requestedHeaders) {
     const allowed = requestedHeaders.split(',').map(trim).map(lowercase).filter((header) =>
