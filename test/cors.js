@@ -137,6 +137,15 @@ describe('gcframe-cors', () => {
       assert(next.calledOnce);
       assert(next.calledWith(req, res));
     });
+    it('includes header with exposed headers listed', () => {
+      req.method = 'GET';
+      req.headers.origin = 'not.com';
+      cors({ allowOrigin: ['not.com'], exposeHeaders: ['Authorization', 'THING'] }, next)(req, res);
+
+      assert(res.set.calledWith('Access-Control-Expose-Headers', 'Authorization, THING'));
+      assert(next.calledOnce);
+      assert(next.calledWith(req, res));
+    });
   });
 
   describe('curried function', () => {
